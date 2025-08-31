@@ -96,9 +96,7 @@ function NotesContent(props: {
     <>
       {!loading && (
         <>
-          <ScoreDisplay />
           <TimePositionContext.Provider value={[timePosition, setTimePosition]}>
-            {chart && (<HandTrackingCanvas />)}
             {chart &&
               chart.notes.expert?.map((note, k) => (
                 <Note note={note} key={k} />

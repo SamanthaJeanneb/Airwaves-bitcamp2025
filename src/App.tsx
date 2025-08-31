@@ -5,6 +5,8 @@ import Menu from "./lib/components/Menu.tsx";
 import Game from "./lib/components/Game";
 import Score from "./lib/components/Score.tsx";
 import Demo from "./lib/components/Demo.tsx";
+import ScoreDisplay from "./lib/components/ScoreDisplay";
+import HandTrackingCanvas from "./lib/components/HandTrackingCanvas";
 import { TipDistanceContext } from "./lib/contexts.ts";
 import { ScoringProvider } from "./lib/contexts/ScoringContext";
 
@@ -70,11 +72,15 @@ function App() {
       <ScoringProvider>
         <TipDistanceContext.Provider value={distanceState}>
           {level ? (
-            <Canvas>
-              <Three />
-              <Lighting />
-              {level != undefined && <Notes level={level} />}
-            </Canvas>
+            <>
+              <ScoreDisplay />
+              <HandTrackingCanvas />
+              <Canvas>
+                <Three />
+                <Lighting />
+                {level != undefined && <Notes level={level} />}
+              </Canvas>
+            </>
           ) : (
             <div className="App">
               {screen === "menu" && <Menu setScreen={setScreen} />}
