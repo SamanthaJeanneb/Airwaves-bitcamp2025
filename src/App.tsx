@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import Notes from "./lib/components/Notes";
 import Menu from "./lib/components/Menu.tsx";
