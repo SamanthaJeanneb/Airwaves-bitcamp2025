@@ -5,15 +5,9 @@ import Tile from "./Tile";
 import base from "../base";
 import { parse } from "../ChartParser";
 import HandTrackingCanvas from "./HandTrackingCanvas";
-import { ScoringProvider } from "../contexts/ScoringContext";
-import ScoreDisplay from "./ScoreDisplay";
-import { useNoteHitDetection } from "../hooks/useNoteHitDetection";
 
-function NotesContent(props: { 
-  level: string; 
-  onSongEnd?: () => void;
-}) {
-  const { level, onSongEnd } = props;
+function Notes(props: { level: string }) {
+  const { level } = props;
 
   const frametime = 16;
   const [timePosition, setTimePosition] = useState(0);
@@ -22,26 +16,7 @@ function NotesContent(props: {
   const interval = useRef<NodeJS.Timeout | null>(null);
   const audio = new Audio();
 
-  // Use hit detection hook
-  useNoteHitDetection(chart?.notes.expert || []);
   const start = () => {
-  // Check if song has ended
-  useEffect(() => {
-    if (!audio || !onSongEnd) return;
-    
-    const handleSongEnd = () => {
-      if (interval.current) {
-        clearInterval(interval.current);
-      }
-      onSongEnd();
-    };
-    
-    audio.addEventListener('ended', handleSongEnd);
-    
-    return () => {
-      audio.removeEventListener('ended', handleSongEnd);
-    };
-  }, [audio, onSongEnd]);
     load(true);
 
     Promise.all([
@@ -83,20 +58,10 @@ function NotesContent(props: {
 
   useEffect(start, [level]);
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (interval.current) {
-        clearInterval(interval.current);
-      }
-      audio.pause();
-    };
-  }, []);
   return (
     <>
       {!loading && (
         <>
-          <ScoreDisplay />
           <TimePositionContext.Provider value={[timePosition, setTimePosition]}>
             {chart && (<HandTrackingCanvas />)}
             {chart &&
@@ -111,20 +76,6 @@ function NotesContent(props: {
         </>
       )}
     </>
-  );
-}
-
-function Notes(props: { level: string }) {
-  return (
-    <ScoringProvider>
-      <NotesContent 
-        level={props.level} 
-        onSongEnd={() => {
-          // This will be handled by the parent App component
-          // when the song ends, it should transition to score screen
-        }} 
-      />
-    </ScoringProvider>
   );
 }
 

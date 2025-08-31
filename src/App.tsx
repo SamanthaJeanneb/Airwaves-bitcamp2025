@@ -6,10 +6,7 @@ import Game from "./lib/components/Game";
 import Score from "./lib/components/Score.tsx";
 import Demo from "./lib/components/Demo.tsx";
 import { TipDistanceContext } from "./lib/contexts.ts";
-import { ScoringProvider } from "./lib/contexts/ScoringContext";
 
-// Audio instance to track song completion
-let gameAudio: HTMLAudioElement | null = null;
 function Lighting() {
   return (
     <>
@@ -45,50 +42,32 @@ function App() {
   const [screen, setScreen] = useState<"menu" | "game" | "score" | "demo">(
     "menu"
   );
+  const [score, _setScore] = useState(100);
   const [level, setLevel] = useState<string | null>(null);
   const distanceState = useState<number[]>([]);
 
-  // Handle song completion
-  useEffect(() => {
-    if (!level) return;
-    
-    // Create audio instance when level starts
-    gameAudio = new Audio();
-    gameAudio.addEventListener('ended', () => {
-      setScreen('score');
-    });
-    
-    return () => {
-      if (gameAudio) {
-        gameAudio.removeEventListener('ended', () => {});
-        gameAudio = null;
-      }
-    };
-  }, [level]);
   return (
     <div className="h-screen w-screen absolute top-0 left-0">
-      <ScoringProvider>
-        <TipDistanceContext.Provider value={distanceState}>
-          {level ? (
-            <Canvas>
-              <Three />
-              <Lighting />
-              {level != undefined && <Notes level={level} />}
-            </Canvas>
-          ) : (
-            <div className="App">
-              {screen === "menu" && <Menu setScreen={setScreen} />}
-              {screen === "game" && (
-                <Game setScreen={setScreen} setLevel={setLevel} />
-              )}
-              {screen === "score" && (
-                <Score setScreen={setScreen} />
-              )}
-              {screen === "demo" && <Demo setScreen={setScreen} />}
-            </div>
-          )}
-        </TipDistanceContext.Provider>
-      </ScoringProvider>
+      <TipDistanceContext.Provider value={distanceState}>
+        {level ? (
+          <Canvas>
+            <Three />
+            <Lighting />
+            {level != undefined && <Notes level={level} />}
+          </Canvas>
+        ) : (
+          <div className="App">
+            {screen === "menu" && <Menu setScreen={setScreen} />}
+            {screen === "game" && (
+              <Game setScreen={setScreen} setLevel={setLevel} />
+            )}
+            {screen === "score" && (
+              <Score score={score} setScreen={setScreen} />
+            )}
+            {screen === "demo" && <Demo setScreen={setScreen} />}
+          </div>
+        )}
+      </TipDistanceContext.Provider>
     </div>
   );
 }
