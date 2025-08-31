@@ -33,12 +33,14 @@ const Menu = ({ setScreen }: Props) => {
         />
       </div>
       <div className="button-container">
+        {/* 
         <button
           className="text-white bg-pink-400 rounded"
           onClick={() => setScreen("demo")}
         >
           demo
         </button>
+        */}
       </div>
     </div>
   );
