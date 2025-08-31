@@ -1,6 +1,7 @@
 import { ThreeElements } from "@react-three/fiber";
-import { useContext, useEffect, useState, memo } from "react";
+import { useContext, useEffect, useState, memo, useRef } from "react";
 import { TimePositionContext } from "../contexts";
+import { useScoringContext } from "../contexts/ScoringContext";
 
 const settings = {
   noteSpeed: 5000,
@@ -26,7 +27,8 @@ const SingleNote = memo(
 function Note(props: { note: ChartFile.Note }) {
   const { note } = props;
   const [timePosition] = useContext(TimePositionContext);
-  // const settings = useContext(SettingsContext);
+  const { addMiss } = useScoringContext();
+  const missedRef = useRef(false);
 
   const [z, setZ] = useState(0);
   const [fade, setFade] = useState(1);
@@ -41,6 +43,17 @@ function Note(props: { note: ChartFile.Note }) {
     setZ(z);
   }, [note, timePosition]);
 
+  // Check if note has passed without being hit
+  useEffect(() => {
+    const timeDiff = timePosition - note.ms;
+    const HIT_WINDOW = 150;
+    
+    if (timeDiff > HIT_WINDOW && !missedRef.current) {
+      // Note has passed the hit window without being processed
+      missedRef.current = true;
+      addMiss();
+    }
+  }, [timePosition, note.ms, addMiss]);
   return (
     <>
       {note.ms < timePosition + settings.noteSpeed && (
